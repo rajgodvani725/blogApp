@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlogApp - SignIn</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-snackbar@latest/src/js/snackbar.min.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/node-snackbar@latest/dist/snackbar.min.css" />
+
+  <style>
+    @font-face {
+      font-family: 'GT Super $00 Normal';
+      font-style: normal;
+      font-weight: 500;
+      src: url(../static/fonts/gt-super-400-normal.woff) format('woff');
+    }
+    body {
+      font-family: 'GT Super $00 Normal', Arial, sans-serif;
+    }
+  </style>   
+  <style>
+    .full-height {
+      min-height: 100vh;
+    }
+    .btn-rounded {
+      border-radius: 50px;
+    }
+    .card {
+      padding: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .btn-black {
+      background-color: #000;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row full-height justify-content-center align-items-center">
+      <div class="col-md-4 full-height ">
+        <div class="card shadow rounded full-height justify-content-center  ">
+          <h2 class="text-center mb-4">Login</h2>
+          <form id="login-form" novalidate>
+            {% csrf_token %}
+
+            <div class="form-group">
+              <input type="email" class="form-control" placeholder="Email" id="email" required>
+              <div class="invalid-feedback">Please enter a valid email address.</div>
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control" placeholder="Password" required id="password">
+              <div class="invalid-feedback">Please enter your password.</div>
+            </div>
+            <button type="submit" id="login-btn" class="btn btn-lg btn-block btn-rounded btn-black">Login</button>
+          </form>
+          <div class="text-center mt-3">
+            <p>Don't have an account? <a href="/signup" class="btn-link">Create an Account</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Client-side form validation using jQuery
+    $(document).ready(function() {
+      $('#email').on('input', function() {
+        var email = $(this).val();
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          $(this).removeClass('is-valid').addClass('is-invalid');
+        } else {
+          $(this).removeClass('is-invalid').addClass('is-valid');
+        }
+      });
+
+      $('#login-form').on('submit', function(event) {
+        event.preventDefault();
+        let email = $('#email').val();
+        let password = $('#password').val();
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          event.preventDefault();
+          $('#email').addClass('is-invalid');
+        }
+        $(this).addClass('was-validated');
+
+        event.preventDefault();
+        var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+        var formData = {
+          'email': email,
+          'password': password,
+          'csrfmiddlewaretoken': csrfToken
+        };
+        
+        $.ajax({
+          type: 'POST',
+          url: '/signin/',
+          data: formData,
+          success: function(response) {
+            window.location.href = '/';
+          },
+          error: function(response) {
+            Snackbar.show({text: response.responseJSON.error,pos:'top-center'});
+          }
+        });
+
+      });
+      
+    });
+  </script>
+</body>
+</html>

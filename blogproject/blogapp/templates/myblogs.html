@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Blogs - BlogApp</title>
+    <!-- Include Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <!-- Include Quill.js CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Header Section -->
+    {% include 'header.html' %}
+    <!-- Main Content Area -->
+    <main class="container mt-4">
+    
+    </main>
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Include Quill.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+    <!-- Include your custom JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+      // Initialize Quill editor
+    //   var quill = new Quill("#editor", {
+    //     theme: "snow",
+    //   });
+    //   function updatePreviewAndOpenModal() {
+    //     var title = document.getElementById("blogTitle").value;
+    //     var content = quill.root.innerHTML;
+    //     var previewContent = document.getElementById("previewContent");
+    //     previewContent.innerHTML = `
+    //         <h2>${title}</h2>
+    //         <div>${content}</div>
+    //     `;
+    //     $("#previewModal").modal("show"); // Open the modal
+    //   }
+    //   function publishBlog() {
+    //     var title = document.getElementById("blogTitle").value;
+    //     var content = quill.root.innerHTML;
+
+    //     $.ajax({
+    //       type: "POST",
+    //       url: "/publish-blog/", // Update with your Django endpoint
+    //       data: {
+    //         title: title,
+    //         content: content,
+    //         is_published: true,
+    //         is_draft: false,
+    //       },
+    //       success: function (response) {
+    //         alert("Blog post published successfully!");
+    //         window.location.href = "/"; // Redirect to home page or wherever you want
+    //       },
+    //       error: function (xhr, status, error) {
+    //         alert("Error publishing blog post: " + error);
+    //       },
+    //     });
+    //   }
+    </script>
+  </body>
+</html>

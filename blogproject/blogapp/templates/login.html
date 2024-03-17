@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    @font-face {
+      font-family: 'GT Super $00 Normal';
+      font-style: normal;
+      font-weight: 500;
+      src: url(../static/fonts/gt-super-400-normal.woff) format('woff');
+    }
+    body {
+      font-family: 'GT Super $00 Normal', Arial, sans-serif;
+    }
+  </style>   
+  <style>
+    .full-height {
+      min-height: 100vh;
+    }
+    .btn-rounded {
+      border-radius: 50px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row full-height justify-content-center align-items-center">
+      <div class="col-md-4 full-height ">
+        <div class="card shadow p-3 rounded full-height ">
+          <h2 class="text-center mb-4">Welcome Back!</h2>
+          <div class="text-center m-5">
+            <button class="btn btn-outline-dark btn-lg btn-rounded btn-light mb-3 "><i class="fab fa-google"></i> Login with Google</button>
+            <a href="/email-login/" class="btn btn-outline-dark btn-lg btn-rounded"><i class="fas fa-envelope"></i> Email Signup</a>
+            <p class="mt-3">Don't have an account? <a href="/signup/">Sign up</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

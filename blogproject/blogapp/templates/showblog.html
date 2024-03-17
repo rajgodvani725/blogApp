@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog Title - BlogApp</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .container-inner {
+        padding-top: 50px;
+        padding-bottom: 50px;
+      }
+      .blog-content {
+        font-size: 18px;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    {% include 'header.html' %}
+    <div class="container container-inner px-4">
+      <div class="col-sm-10 col-10">
+        <div class="col col-sm-4 px-0">
+          <div class="row mt-1">
+            <div class="col-sm-2 col-1 mr-1 mr-sm-0 d-flex align-items-center">
+              <img
+                src="https://picsum.photos/id/15/30/30"
+                class="img-responsive rounded"
+                alt=""
+                srcset=""
+              />
+            </div>
+            <div class="col-sm-10 col-10 pt-1">
+              <p class="mb-0">{{blog.author}}</p>
+              <p>{{blog.created_at}}</p>
+            </div>
+          </div>
+        </div>
+        <h1 class="mb-4">{{blog.title}}</h1>
+
+        <div class="blog-content">
+          <p>{{blog.content | safe}}</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

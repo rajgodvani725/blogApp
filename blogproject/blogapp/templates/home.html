@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../static/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="../static/css/medium.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>BlogApp - Home</title>
+  </head>
+  <body>
+    <!-- nav start -->
+    {% include 'header.html' %}
+
+    <!-- nav end -->
+
+    <!-- jumbobox start -->
+    <div class="bg-yellow pt-4 pb-1 border-bottom-dark order-sm-9">
+      <div class="container py-2">
+        <div class="row">
+          <div class="col-sm-6 pt-2">
+            <h1 class="font-spectral">
+              <strong>Explore new perspectives</strong>
+            </h1>
+            <p class="my-4 lead" style="font-size: 18px">
+              <strong>
+                Read and share ideas from independent voices, world-class
+                publications, and experts from around the globe. Everyone's
+                welcome.
+              </strong>
+
+              <a href="#" class="text-dark"><u>Learn more.</u></a>
+            </p>
+            <a
+              href="#"
+              class="btn btn-outline-dark px-3 hover-dark"
+              style="font-size: 16px"
+              >Get Started</a
+            >
+          </div>
+          <div class="col-sm-6 pl-5 d-none d-sm-block">
+            <img
+              class="rounded-circle"
+              src="../static/img/world.png"
+              alt="world map"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- jumbobox end-->
+
+    <!-- trending section start -->
+    <div class="border-bottom pb-4 order-sm-8">
+      <div class="container mt-5">
+        <div class="row">
+          <div class="col-12">
+            <p>
+              <i class="fas fa-rocket"></i>
+              <strong class="ml-2">TRENDING ON BlogApp</strong>
+            </p>
+          </div>
+        </div>
+
+        <div class="row" id="blog-lists"></div>
+      </div>
+    </div>
+  </body>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+    var blogs = [];
+    $(document).ready(function () {
+      $.ajax({
+        type: "POST",
+        url: "/get-blogs/",
+        success: function (response) {
+          blogs = response.blogs;
+          plot_blog_data();
+        },
+        error: function (xhr, status, error) {
+          alert("Error publishing blog post: " + error);
+        },
+      });
+    });
+    function stripTags(html) {
+      return html.replace(/(<([^>]+)>)/gi, "");
+    }
+    function extractFirstWords(content, numWords) {
+      var words = content.split(" ");
+      var firstWords = words.slice(0, numWords);
+      var excerpt = firstWords.join(" ");
+      return excerpt;
+    }
+    function plot_blog_data() {
+      blogs.forEach((blog, index) => {
+        $("#blog-lists").append(`
+          <div class="col-sm-4 ">
+                <div class="row">
+                  <div class="col-sm-2 col-2">
+                      <h3 class="text-black-50 ">${index + 1}</h3>
+                  </div>
+                  <a href= "/showblog/${blog.id}" style="color:inherit;text-decoration:none">
+                    <div class="col-sm-10 col-10" style="cursor:pointer" >
+                      <div class="row mt-1">
+                        <div class="col-sm-10 col-10 pt-1 ">
+                          <p>${blog.title}</p>
+                        </div>
+                      </div>
+                      <strong
+                        >${extractFirstWords(stripTags(blog.content), 9)} — 
+                      </strong>
+                      <ul class="list-inline small text-black-50 mt-2 ">
+                        <li class="list-inline-item">${
+                          blog.created_at.split("T")[0]
+                        }</li>
+                      </ul>
+                    </div>
+                  </a>
+                </div>
+          </div>`);
+      });
+    }
+  </script>
+</html>
