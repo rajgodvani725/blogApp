@@ -14,6 +14,9 @@
       href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"
       rel="stylesheet"
     />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-snackbar@latest/src/js/snackbar.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/node-snackbar@latest/dist/snackbar.min.css" />
   </head>
   <style>
     #show-blogs {
@@ -81,7 +84,6 @@
                 <div id="editor" style="height: 300px"></div>
               </div>
 
-              <!-- Preview content will be displayed here -->
             </div>
             <div class="modal-footer">
               <button
@@ -115,11 +117,12 @@
             plot_blogs()
           })
           function plot_blogs(){
-            $('#show-blogs').empty();
-            blogs_list.forEach(element => {
+            $('#show-blogs').empty()
+            if(blogs_list.length>0){
+              blogs_list.forEach(element => {
               $('#show-blogs').append(`
-              <div class="col col-md-4">
-                <a href="/showblog/${element.id}" style="text-decoration:none;color:inherit" >
+              <div class="col col-md-4 mt-3">
+                <a target="_blank" href="/showblog/${element.id}" style="text-decoration:none;color:inherit" >
                 <div class="card" style="width: 18rem;">
                   <img
                     src="https://images.unsplash.com/photo-1504610926078-a1611febcad3?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e1c8fe0c9197d66232511525bfd1cc82&auto=format&fit=crop&w=1100&q=80"
@@ -129,7 +132,7 @@
                     <h5 class="card-title">${element.title}</h5>
                     <p class="card-text">${extractFirstWords(stripTags(element.content), 27)}</p>
                     </div>
-                    <div class="card-footer border-0 bg-transparent ">
+                    <div class="card-footer border-0 bg-transparent  d-flex justify-content-end " style="gap:10px">
                     <button class="btn btn-primary" onclick="edit_blog(${element.id})">Edit</button>
                     <button class="btn btn-danger" onclick="delete_blog(event,${element.id})">Delete</button>
                     ${JSON.parse(element.is_draft) ? `<button class="btn btn-success" onclick="publish_blog(event,${element.id})">Publish</button>`:''}
@@ -139,9 +142,12 @@
                 </div>
                 `)
             });
-
+            } 
+            else{
+              $('#show-blogs').empty();
+              $('#show-blogs').append(`<span class="d-flex justify-content-center w-100"> You haven't created any blogs. <a href="/create-blog/">Create Blog</a></span>`);
+            } 
           }
-          // Initialize Quill editor
           var quill = new Quill("#editor", {
             theme: "snow",
           });
@@ -153,10 +159,18 @@
             $('#previewModal').modal('show')
           }
 
+          function sanitizeInput(input) {
+                let sanitizedInput = input.replace(/<script.*?>.*?<\/script>/gi, "")
+                                          .replace(/on\w+="[^"]*"/g, "")
+                                          .replace(/alert\s*\(/gi, ""); 
+                return sanitizedInput;
+            }
+
           $('#update_blog').on('click', function(e) {
             e.preventDefault();
             var title = document.getElementById("blogTitle").value;
             var content = quill.root.innerHTML;
+            verify_content_status = verify_content(content)
             let id = $('#blog_id').html().trim();
             $.ajax({
               type: "POST",
@@ -164,13 +178,13 @@
               data: {
                 request_for:'update_blog',
                 title: title,
-                content: content,
+                content: sanitizeInput(content),
                 id:id,
               },
               success: function (response) {
                 console.log(response);
                 blogs_list = response.blogs
-                alert("Blog post updated successfully!");
+                Snackbar.show({text: 'Blog post updated successfully!',pos:'top-center'});
                 $('#blogTitle').val('');
                 quill.root.innerHTML = ''
                 $('#blog_id').html('')
@@ -178,7 +192,8 @@
                 $('#previewModal').modal('hide')
               },
               error: function (xhr, status, error) {
-                alert("Error publishing blog post: " + error);
+                Snackbar.show({text: 'Something went wrong!',pos:'top-center'});
+                console.log("Error publishing blog post: " + error);
               },
             });
           })
@@ -203,7 +218,8 @@
                 plot_blogs()
               },
               error: function (xhr, status, error) {
-                alert("Error publishing blog post: " + error);
+                Snackbar.show({text: 'Something went wrong!',pos:'top-center'});
+                console.log("Error publishing blog post: " + error);
               },
             });
           }
@@ -221,7 +237,8 @@
                 plot_blogs()
               },
               error: function (xhr, status, error) {
-                alert("Error publishing blog post: " + error);
+                Snackbar.show({text: 'Something went wrong!',pos:'top-center'});
+                console.log("Error publishing blog post: " + error);
               },
             });
           }

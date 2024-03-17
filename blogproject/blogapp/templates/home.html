@@ -16,15 +16,52 @@
       href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
+    
     <title>BlogApp - Home</title>
+    <style>
+      .blogs-card{
+        border:1px solid #d6d6d6;
+        border-radius: 5px ;
+      }
+      .blogs-card:hover{
+         box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.5);
+         transition: box-shadow 0.3s ease;
+      }
+
+.loader {
+  width: fit-content;
+  font-weight: bold;
+  font-family: monospace;
+  white-space: pre;
+  font-size: 30px;
+}
+.loader:before {
+  content: "Loading...";
+  animation: l34 1s infinite alternate;
+}
+
+@keyframes l34{
+  0%,15%,75%,100% {
+   content:"Loading...";
+  }
+  20% {content:"Loading..."}
+  25% {content:"Lo ding..."}
+  30% {content:"Load ng..."}
+  35% {content:" oading..."}
+  40% {content:"L ading..."}
+  45% {content:"Loadin ..."}
+  50% {content:"Loa ing..."}
+  55% {content:"Loading  ."}
+  60% {content:" oa ing..."}
+  65% {content:"L ading..."}
+  70% {content:"Load n ..."}
+}
+    </style>
   </head>
   <body>
-    <!-- nav start -->
     {% include 'header.html' %}
 
-    <!-- nav end -->
-
-    <!-- jumbobox start -->
+ 
     <div class="bg-yellow pt-4 pb-1 border-bottom-dark order-sm-9">
       <div class="container py-2">
         <div class="row">
@@ -58,9 +95,7 @@
         </div>
       </div>
     </div>
-    <!-- jumbobox end-->
 
-    <!-- trending section start -->
     <div class="border-bottom pb-4 order-sm-8">
       <div class="container mt-5">
         <div class="row">
@@ -72,7 +107,7 @@
           </div>
         </div>
 
-        <div class="row" id="blog-lists"></div>
+        <div class="row d-flex"  id="blog-lists"></div>
       </div>
     </div>
   </body>
@@ -81,15 +116,19 @@
   <script>
     var blogs = [];
     $(document).ready(function () {
+      
+      $("#blog-lists").html(`<div class="loader d-flex align-items-center justify-content-center  w-100"></div>`)
       $.ajax({
         type: "POST",
         url: "/get-blogs/",
         success: function (response) {
           blogs = response.blogs;
+          $("#blog-lists").html('')
           plot_blog_data();
         },
         error: function (xhr, status, error) {
-          alert("Error publishing blog post: " + error);
+          Snackbar.show({text: 'Something went wrong!',pos:'top-center'});
+          console.log("Error publishing blog post: " + error);
         },
       });
     });
@@ -105,8 +144,8 @@
     function plot_blog_data() {
       blogs.forEach((blog, index) => {
         $("#blog-lists").append(`
-          <div class="col-sm-4 ">
-                <div class="row">
+        <div class="col-sm-4 mt-3">
+              <div class="row blogs-card" style="width: 100%; min-height: 100%">
                   <div class="col-sm-2 col-2">
                       <h3 class="text-black-50 ">${index + 1}</h3>
                   </div>
@@ -117,8 +156,8 @@
                           <p>${blog.title}</p>
                         </div>
                       </div>
-                      <strong
-                        >${extractFirstWords(stripTags(blog.content), 9)} — 
+                      <strong class="text-break "
+                        >${extractFirstWords(stripTags(blog.content), 9)}
                       </strong>
                       <ul class="list-inline small text-black-50 mt-2 ">
                         <li class="list-inline-item">${

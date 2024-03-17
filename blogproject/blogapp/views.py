@@ -7,7 +7,6 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Blog
 from django.contrib.auth.decorators import login_required
 import json
-from django.http import request
 
 def signup(request):
     if request.method == "POST":
@@ -52,7 +51,7 @@ def signin(request):
         else:
             return JsonResponse({"error": "Invalid email or password"}, status=500)
     else:
-        return render(request, "login.html")
+        return render(request, "email-login.html")
 
 
 def home(request):
@@ -62,10 +61,6 @@ def home(request):
 def signout(request):
     logout(request)
     return render(request, "home.html")
-
-
-def emailLogin(request):
-    return render(request, "email-login.html")
 
 
 @csrf_exempt
@@ -105,7 +100,6 @@ def publish_blog(request):
                 return JsonResponse({"blogs": serialized_blogs},status=200)
             
             if request_for == 'publish_blog':
-                import pdb;pdb.set_trace()
                 blog = Blog.objects.get(id=id)
                 blog.is_published = True
                 blog.is_draft = False

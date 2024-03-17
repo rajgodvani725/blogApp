@@ -14,14 +14,14 @@
       href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"
       rel="stylesheet"
     />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/node-snackbar@latest/src/js/snackbar.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/node-snackbar@latest/dist/snackbar.min.css" />
   </head>
   <body>
-    <!-- Header Section -->
     {% include 'header.html' %}
-    <!-- Main Content Area -->
     <main class="container mt-4">
       <h1>Create a New Blog Post</h1>
-      <!-- Blog Content Input -->
       <div class="form-group">
         <label for="blogTitle">Title</label>
         <input
@@ -35,16 +35,15 @@
         <label for="blogContent">Content</label>
         <div id="editor" style="height: 300px"></div>
       </div>
-      <!-- Buttons for Saving Draft, Preview, and Publish -->
       <div class="form-group d-flex justify-content-end">
         <button type="button" class="btn btn-secondary mr-2" onclick="saveDraft()">Save Draft</button>
-        <button
+        <!-- <button
           type="button"
           class="btn btn-primary mr-2"
           onclick="updatePreviewAndOpenModal()"
         >
           Preview
-        </button>
+        </button> -->
         <button type="button" class="btn btn-success" onclick="publishBlog()">
           Publish
         </button>
@@ -98,39 +97,45 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-      // Initialize Quill editor
+        function sanitizeInput(input) {
+                let sanitizedInput = input.replace(/<script.*?>.*?<\/script>/gi, "")
+                                          .replace(/on\w+="[^"]*"/g, "")
+                                          .replace(/alert\s*\(/gi, ""); 
+                return sanitizedInput;
+            }
       var quill = new Quill("#editor", {
         theme: "snow",
       });
-      function updatePreviewAndOpenModal() {
-        var title = document.getElementById("blogTitle").value;
-        var content = quill.root.innerHTML;
-        var previewContent = document.getElementById("previewContent");
-        previewContent.innerHTML = `
-            <h2>${title}</h2>
-            <div>${content}</div>
-        `;
-        $("#previewModal").modal("show"); // Open the modal
-      }
+      // function updatePreviewAndOpenModal() {
+      //   var title = document.getElementById("blogTitle").value;
+      //   var content = quill.root.innerHTML;
+      //   var previewContent = document.getElementById("previewContent");
+      //   previewContent.innerHTML = `
+      //       <h2>${title}</h2>
+      //       <div>${content}</div>
+      //   `;
+      //   $("#previewModal").modal("show"); // Open the modal
+      // }
       function publishBlog() {
         var title = document.getElementById("blogTitle").value;
         var content = quill.root.innerHTML;
 
         $.ajax({
           type: "POST",
-          url: "/publish-blog/", // Update with your Django endpoint
+          url: "/publish-blog/", 
           data: {
             title: title,
-            content: content,
+            content: sanitizeInput(content),
             is_published: true,
             is_draft: false,
           },
           success: function (response) {
-            alert("Blog post published successfully!");
+            Snackbar.show({text: 'Blog post published successfully!',pos:'top-center'})
             window.location.href = "/"; // Redirect to home page or wherever you want
           },
           error: function (xhr, status, error) {
-            alert("Error publishing blog post: " + error);
+            Snackbar.show({text: 'Something went wrong!',pos:'top-center'})
+            console.log("Error publishing blog post: " + error);
           },
         });
       }
@@ -139,19 +144,20 @@
         var content = quill.root.innerHTML;
         $.ajax({
           type: "POST",
-          url: "/publish-blog/", // Update with your Django endpoint
+          url: "/publish-blog/", 
           data: {
             title: title,
-            content: content,
+            content: sanitizeInput(content),
             is_published: false,
             is_draft: true,
           },
           success: function (response) {
-            alert("Blog saved as draft!");
+            Snackbar.show({text: 'Blog saved as draft!',pos:'top-center'})
             window.location.href = "/"; 
           },
           error: function (xhr, status, error) {
-            alert("Error publishing blog post: " + error);
+            Snackbar.show({text: 'Something went wrong!',pos:'top-center'})
+            console.log("Error publishing blog post: " + error);
           },
         });
       }
