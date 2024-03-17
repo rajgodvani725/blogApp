@@ -9,9 +9,10 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import environ
+env = environ.Env()
+environ.Env.read_env()
 from pathlib import Path
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -71,14 +72,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'blogproject.wsgi.application'
 
 
+# DATABASES = {
+#   'default': {
+#     'ENGINE': 'django.db.backends.postgresql',
+#     'NAME': 'blog' env('DB_NAME'),
+#     'USER': 'blog_owner',
+#     'PASSWORD': 'JBaDbH8Kot6X',
+#     'HOST': 'ep-white-thunder-a550bqqy.us-east-2.aws.neon.tech',
+#     'PORT': '5432',
+#     'OPTIONS': {
+#             'sslmode': 'require',
+#         }
+#   }
+# }
 DATABASES = {
   'default': {
     'ENGINE': 'django.db.backends.postgresql',
-    'NAME': 'blog',
-    'USER': 'blog_owner',
-    'PASSWORD': 'JBaDbH8Kot6X',
-    'HOST': 'ep-white-thunder-a550bqqy.us-east-2.aws.neon.tech',
-    'PORT': '5432',
+    'NAME': env('DB_NAME'),
+    'USER': env('DB_USER'),
+    'PASSWORD': env('DB_PASSWORD'),
+    'HOST': env('DB_HOST'),
+    'PORT': env('DB_PORT'),
     'OPTIONS': {
             'sslmode': 'require',
         }

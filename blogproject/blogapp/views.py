@@ -74,16 +74,45 @@ def publish_blog(request):
     if request.method == "POST":
         title = request.POST.get("title")
         content = request.POST.get("content")
-        is_draft = json.loads(request.POST.get("is_draft"))
-        is_published = json.loads(request.POST.get("is_published"))
-        Blog.objects.create(
+        id = request.POST.get("id",None)
+        if not id:
+            is_draft = json.loads(request.POST.get("is_draft"))
+            is_published = json.loads(request.POST.get("is_published"))
+            Blog.objects.create(
             author=request.user,
             title=title,
             content=content,
             is_draft=is_draft,
             is_published=is_published,
         )
-        return JsonResponse({"success": True})
+            return JsonResponse({"success": True})
+        else:
+            request_for = request.POST.get("request_for")
+            if request_for =='update_blog':
+                blog = Blog.objects.get(id=id)
+                blog.title = title
+                blog.content = content
+                blog.save()
+                blogs = Blog.objects.filter(author=request.user)
+                serialized_blogs = [blog.to_dict() for blog in blogs]
+                return JsonResponse({"blogs": serialized_blogs},status=200)
+            
+            if request_for == 'delete_blog':
+                blog = Blog.objects.get(id=id)
+                blog.delete()
+                blogs = Blog.objects.filter(author=request.user)
+                serialized_blogs = [blog.to_dict() for blog in blogs]
+                return JsonResponse({"blogs": serialized_blogs},status=200)
+            
+            if request_for == 'publish_blog':
+                import pdb;pdb.set_trace()
+                blog = Blog.objects.get(id=id)
+                blog.is_published = True
+                blog.is_draft = False
+                blog.save()
+                blogs = Blog.objects.filter(author=request.user)
+                serialized_blogs = [blog.to_dict() for blog in blogs]
+                return JsonResponse({"blogs": serialized_blogs},status=200)
     else:
         return JsonResponse({"error": "Invalid request method"}, status=400)
 
@@ -117,6 +146,9 @@ def createblog(request):
 @login_required(login_url="/signin/")
 def myBlogs(request):
     if request.user.is_authenticated:
-        return render(request, "myblogs.html")
+        blogs = Blog.objects.filter(author=request.user)
+        serialized_blogs = [blog.to_dict() for blog in blogs]
+        context = {"blogs": serialized_blogs}
+        return render(request, "myblogs.html", context)
     else:
         return redirect("signin")

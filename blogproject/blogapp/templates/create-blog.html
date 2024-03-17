@@ -37,7 +37,7 @@
       </div>
       <!-- Buttons for Saving Draft, Preview, and Publish -->
       <div class="form-group d-flex justify-content-end">
-        <button type="button" class="btn btn-secondary mr-2">Save Draft</button>
+        <button type="button" class="btn btn-secondary mr-2" onclick="saveDraft()">Save Draft</button>
         <button
           type="button"
           class="btn btn-primary mr-2"
@@ -128,6 +128,27 @@
           success: function (response) {
             alert("Blog post published successfully!");
             window.location.href = "/"; // Redirect to home page or wherever you want
+          },
+          error: function (xhr, status, error) {
+            alert("Error publishing blog post: " + error);
+          },
+        });
+      }
+      function saveDraft() {
+        var title = document.getElementById("blogTitle").value;
+        var content = quill.root.innerHTML;
+        $.ajax({
+          type: "POST",
+          url: "/publish-blog/", // Update with your Django endpoint
+          data: {
+            title: title,
+            content: content,
+            is_published: false,
+            is_draft: true,
+          },
+          success: function (response) {
+            alert("Blog saved as draft!");
+            window.location.href = "/"; 
           },
           error: function (xhr, status, error) {
             alert("Error publishing blog post: " + error);

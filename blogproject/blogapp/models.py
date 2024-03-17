@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
-
+import json
 User._meta.get_field('email')._unique = True
 
 class Blog(models.Model):
@@ -19,7 +19,8 @@ class Blog(models.Model):
             'title': self.title,
             'content': self.content,
             'author': self.author.username,
-            'created_at': self.created_at.strftime("%B %d, %Y")
+            'created_at': self.created_at.strftime("%B %d, %Y"),
+            'is_draft': json.dumps(self.is_draft),
         }
     def __str__(self):
         return self.title

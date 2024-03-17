@@ -15,60 +15,216 @@
       rel="stylesheet"
     />
   </head>
+  <style>
+    #show-blogs {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .card {
+      height: 100%;
+    }
+  </style>
   <body>
     <!-- Header Section -->
     {% include 'header.html' %}
     <!-- Main Content Area -->
-    <main class="container mt-4">
-    
-    </main>
+    <main class="container mt-4"></main>
 
     <!-- Include Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Include Quill.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
-    <!-- Include your custom JavaScript -->
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script>
-      // Initialize Quill editor
-    //   var quill = new Quill("#editor", {
-    //     theme: "snow",
-    //   });
-    //   function updatePreviewAndOpenModal() {
-    //     var title = document.getElementById("blogTitle").value;
-    //     var content = quill.root.innerHTML;
-    //     var previewContent = document.getElementById("previewContent");
-    //     previewContent.innerHTML = `
-    //         <h2>${title}</h2>
-    //         <div>${content}</div>
-    //     `;
-    //     $("#previewModal").modal("show"); // Open the modal
-    //   }
-    //   function publishBlog() {
-    //     var title = document.getElementById("blogTitle").value;
-    //     var content = quill.root.innerHTML;
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    //     $.ajax({
-    //       type: "POST",
-    //       url: "/publish-blog/", // Update with your Django endpoint
-    //       data: {
-    //         title: title,
-    //         content: content,
-    //         is_published: true,
-    //         is_draft: false,
-    //       },
-    //       success: function (response) {
-    //         alert("Blog post published successfully!");
-    //         window.location.href = "/"; // Redirect to home page or wherever you want
-    //       },
-    //       error: function (xhr, status, error) {
-    //         alert("Error publishing blog post: " + error);
-    //       },
-    //     });
-    //   }
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+    <!-- Include your custom JavaScript -->
+
+    <div class="container">
+      <div class="row mx-0" id="show-blogs"></div>
+
+      <div
+        class="modal fade"
+        id="previewModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="previewModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-xl" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="previewModalLabel">Preview</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="previewContent">
+              <div class="form-group">
+                <label for="blogTitle">Title</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="blogTitle"
+                  placeholder="Enter the title of your blog post"
+                />
+              </div>
+              <span class="d-none" id="blog_id"></span>
+              <div class="form-group">
+                <label for="blogContent">Content</label>
+                <div id="editor" style="height: 300px"></div>
+              </div>
+
+              <!-- Preview content will be displayed here -->
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-primary" id="update_blog">
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+          var blogs_list = {{ blogs | safe }}
+          function stripTags(html) {
+        return html.replace(/(<([^>]+)>)/gi, "");
+      }
+      function extractFirstWords(content, numWords) {
+        var words = content.split(" ");
+        var firstWords = words.slice(0, numWords);
+        var excerpt = firstWords.join(" ");
+        return excerpt;
+      }
+          $(document).ready(function(){
+            plot_blogs()
+          })
+          function plot_blogs(){
+            $('#show-blogs').empty();
+            blogs_list.forEach(element => {
+              $('#show-blogs').append(`
+              <div class="col col-md-4">
+                <a href="/showblog/${element.id}" style="text-decoration:none;color:inherit" >
+                <div class="card" style="width: 18rem;">
+                  <img
+                    src="https://images.unsplash.com/photo-1504610926078-a1611febcad3?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e1c8fe0c9197d66232511525bfd1cc82&auto=format&fit=crop&w=1100&q=80"
+                    class="mask" style="height: 150px;"
+                  />
+                  <div class="card-body">
+                    <h5 class="card-title">${element.title}</h5>
+                    <p class="card-text">${extractFirstWords(stripTags(element.content), 27)}</p>
+                    </div>
+                    <div class="card-footer border-0 bg-transparent ">
+                    <button class="btn btn-primary" onclick="edit_blog(${element.id})">Edit</button>
+                    <button class="btn btn-danger" onclick="delete_blog(event,${element.id})">Delete</button>
+                    ${JSON.parse(element.is_draft) ? `<button class="btn btn-success" onclick="publish_blog(event,${element.id})">Publish</button>`:''}
+                      </div>
+                    </div>
+                </a>
+                </div>
+                `)
+            });
+
+          }
+          // Initialize Quill editor
+          var quill = new Quill("#editor", {
+            theme: "snow",
+          });
+          function edit_blog(id) {
+            selected_blog = blogs_list.find(e=>e.id == id)
+            $('#blogTitle').val(selected_blog.title);
+            $('#blog_id').html(id)
+            quill.root.innerHTML = selected_blog.content;
+            $('#previewModal').modal('show')
+          }
+
+          $('#update_blog').on('click', function(e) {
+            e.preventDefault();
+            var title = document.getElementById("blogTitle").value;
+            var content = quill.root.innerHTML;
+            let id = $('#blog_id').html().trim();
+            $.ajax({
+              type: "POST",
+              url: "/publish-blog/",
+              data: {
+                request_for:'update_blog',
+                title: title,
+                content: content,
+                id:id,
+              },
+              success: function (response) {
+                console.log(response);
+                blogs_list = response.blogs
+                alert("Blog post updated successfully!");
+                $('#blogTitle').val('');
+                quill.root.innerHTML = ''
+                $('#blog_id').html('')
+                plot_blogs()
+                $('#previewModal').modal('hide')
+              },
+              error: function (xhr, status, error) {
+                alert("Error publishing blog post: " + error);
+              },
+            });
+          })
+          $('#previewModal').on('hidden.bs.modal', function(){
+            $('#blogTitle').val('');
+            quill.root.innerHTML = ''
+            $('#blog_id').html('')
+          })
+          function publish_blog(e,id){
+            e.preventDefault();
+            $.ajax({
+              type: "POST",
+              url: "/publish-blog/",
+              data: {
+                id:id,
+                request_for:'publish_blog',
+                is_published: true,
+                is_draft:false
+              },
+              success: function (response) {
+                blogs_list = response.blogs
+                plot_blogs()
+              },
+              error: function (xhr, status, error) {
+                alert("Error publishing blog post: " + error);
+              },
+            });
+          }
+          function delete_blog(e,id){
+            e.preventDefault();
+            $.ajax({
+              type: "POST",
+              url: "/publish-blog/",
+              data: {
+                id:id,
+                request_for:'delete_blog',
+              },
+              success: function (response) {
+                blogs_list = response.blogs
+                plot_blogs()
+              },
+              error: function (xhr, status, error) {
+                alert("Error publishing blog post: " + error);
+              },
+            });
+          }
     </script>
   </body>
 </html>
